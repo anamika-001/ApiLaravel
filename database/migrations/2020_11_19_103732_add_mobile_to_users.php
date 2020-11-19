@@ -14,7 +14,11 @@ class AddMobileToUsers extends Migration
     public function up()
     {
         Schema::table('users', function (Blueprint $table) {
-            //
+            $table->integer("mobile")->after("name");
+            $table->integer("gender_id")->after("email");
+            $table->date("dob")->after("gender_id");
+            $table->date("anniversary")->after("dob");
+            $table->text("comment")->after("anniversary");
         });
     }
 
