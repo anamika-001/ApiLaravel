@@ -1,20 +1,18 @@
 <?php
 
 namespace App\Http\Controllers\Api;
-
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use DB;
 use Validator;
 use App\product;
 class ProductController extends Controller
 {
-  
+
 
   public function createProduct(Request $request) {
-    
-      
-        $validator = Validator::make($request->all(), [ 
+
+
+        $validator = Validator::make($request->all(), [
           'name' => 'required|min:2',
           'code' => 'required',
         'tax_percent' => 'required',
@@ -25,10 +23,10 @@ class ProductController extends Controller
         'hsn_code' => 'required',
         'uom' => 'required',
         'description' => 'required|min:10',
-          
+
       ]);
-      if ($validator->fails()) { 
-        return response()->json(['error'=>$validator->errors()], 401);   
+      if ($validator->fails()) {
+        return response()->json(['error'=>$validator->errors()], 401);
 
     }
 
@@ -47,12 +45,12 @@ class ProductController extends Controller
         $Product->uom = $request->uom;
         $Product->description = $request->description;
 
-        
+
         $Product->save();
-  
+
         return response()->json([
           "message" => "Product record created",
-         
+
           'data' =>  $Product
         ],
          201);
