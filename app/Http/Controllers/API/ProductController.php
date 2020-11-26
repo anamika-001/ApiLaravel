@@ -7,14 +7,16 @@ use Validator;
 use App\product;
 class ProductController extends Controller
 {
-
+   // status for error and success
+   public $successStatus = '200';
+   public $failedStatus = '0';
 
   public function createProduct(Request $request) {
 
-
-        $validator = Validator::make($request->all(), [
-          'name' => 'required|min:2',
-          'code' => 'required',
+     //validating all the rquired fields
+    $validator = Validator::make($request->all(), [
+        'name' => 'required|min:2',
+        'code' => 'required',
         'tax_percent' => 'required',
         'cess_percent' => 'required',
         'quantity' => 'required',
@@ -25,11 +27,12 @@ class ProductController extends Controller
         'description' => 'required|min:10',
 
       ]);
+      //if validation failed
       if ($validator->fails()) {
         return response()->json(['error'=>$validator->errors()], 401);
 
     }
-
+         //taking data and inserting in database column
         $Product = new product;
         $Product->code = $request->code;
         $Product->name = $request->name;
@@ -44,16 +47,23 @@ class ProductController extends Controller
         $Product->hsn_code = $request->hsn_code;
         $Product->uom = $request->uom;
         $Product->description = $request->description;
-
-
         $Product->save();
 
-        return response()->json([
-          "message" => "Product record created",
+         //response message after submission
+         if(!empty($storeddata)){
+         return response()->json([
+            'responceMessage'         => 'product added successfully',
+            'responceCode'            =>  $this-> successStatus,
+            'data'                    => $Product,
+           ]);
+         }else{
+            return response()->json([
+                'responceMessage'         => 'data not entered',
+                'responceCode'            =>  $this-> failedStatus,
+                'data'                    =>  [],
+               ]);
 
-          'data' =>  $Product
-        ],
-         201);
+        }
 
 
       }

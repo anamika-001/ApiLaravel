@@ -9,6 +9,7 @@ use App\Http\Resources\UserResource;
 use Illuminate\Support\Facades\Auth;
 use App\LoginUser;
 use App\Customer;
+use App\CreateRequest;
 
 use Validator;
 class UserController extends Controller
@@ -70,6 +71,7 @@ class UserController extends Controller
                 return response()->json([
                     'responceMessage'         => 'your number is not register',
                     'responceCode'            =>  $this->failedStatus,
+
                    ]);
 
             }
@@ -106,8 +108,9 @@ class UserController extends Controller
         $success['name'] =  $user->name;
         //reponse message after successfully saved
         return response()->json([
-            ['responceMessage'         => $success],
+            'responceMessage'         => 'registered successfully',
             'responceCode'            =>  $this-> successStatus,
+            'data'                    => $success,
            ]);
     }
 
@@ -129,21 +132,83 @@ class UserController extends Controller
         //storing data in database
         $contact = Customer::create($request->all());
         //getting success response when data stored in database
-        return response()->json([
-            ['responceMessage'         => $contact],
+        if(empty($contact)){
+           return response()->json([
+            'responceMessage'         => 'data successfully stored',
             'responceCode'            =>  $this-> successStatus,
+            'data'                    => $contact,
            ]);
-
-    }
+        }else{
+            return response()->json([
+                'responceMessage'         => 'data not entered',
+                'responceCode'            =>  $this-> failedStatus,
+                'data'                    =>  [],
+               ]);
+            }
+     }
 
     //view all data of customers
     public function ViewCustomer(){
-        $Customer = Customer::all();
-        return response()->json([
-            ['responceMessage'         => $Customer],
+        $customer = Customer::all();
+        if(empty($customer)){
+          return response()->json([
+            'responceMessage'         => 'data successfully fetched',
             'responceCode'            =>  $this-> successStatus,
+            'data'                    =>  $customer,
            ]);
+        }else{
+            return response()->json([
+                'responceMessage'         => 'there is no data',
+                'responceCode'            =>  $this-> failedStatus,
+                'data'                    =>  [],
+               ]);
+            }
     }
+
+    // create new requets of customer
+    public function CreateRequest(Request $request){
+        //validating the required fields
+        $validator = Validator::make($request->all(), [
+            'mobile_no' => 'required|max:10',
+            'expected_date' => 'required',
+            'request_text' => 'required|min:10',
+        ]);
+
+         //if validation failed
+        if ($validator->fails()) {
+            return response()->json([
+                ['responceMessage'         => $validator->errors()],
+                'responceCode'            =>  $this-> successStatus,
+               ]);
+        }
+            //taking data from customer and inserting in database column
+            $createrequest= new CreateRequest;
+            $createrequest->mobile_no=$request->mobile_no;
+            $createrequest->product_inquired=$request->product_inquired;
+            $createrequest->customer_price_expectation=$request->customer_price_expectation;
+            $createrequest->expected_date=$request->expected_date;
+            $createrequest->request_text=$request->request_text;
+            $createrequest->image_file=$request->image_file;
+            $storeddata=$createrequest->save();
+             //response message after submission
+             if(!empty($storeddata)){
+                 return response()->json([
+                'responceMessage'         => 'Request Created Successfully',
+                'responceCode'            =>  $this-> successStatus,
+                'data'                    =>  $createrequest,
+               ]);
+            }else{
+                return response()->json([
+                    'responceMessage'         => 'data not entered',
+                    'responceCode'            =>  $this-> failedStatus,
+                    'data'                    =>  [],
+                   ]);
+
+            }
+
+    }
+
+
 /**
      * details api
      *
