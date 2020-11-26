@@ -55,7 +55,7 @@ class UserController extends Controller
              return response()->json([
               'responceMessage'         => 'otp send on your mobile no.',
               'responceCode'            =>  $this->successStatus,
-              'mobile'               =>  $userMobileData->mobile,
+              'mobile'                  =>  $userMobileData->mobile,
               'otp'                     =>  (string)$otp,
            ]);
            }
@@ -107,11 +107,19 @@ class UserController extends Controller
         $success['token'] =  $user->createToken('MyApp')-> accessToken;
         $success['name'] =  $user->name;
         //reponse message after successfully saved
+        if(empty($user)){
         return response()->json([
             'responceMessage'         => 'registered successfully',
             'responceCode'            =>  $this-> successStatus,
             'data'                    => $success,
            ]);
+        }else{
+            return response()->json([
+                'responceMessage'         => 'register data not entered',
+                'responceCode'            =>  $this-> failedStatus,
+                'data'                    =>  [],
+               ]);
+            }
     }
 
     //add customer into customer list
@@ -209,14 +217,5 @@ class UserController extends Controller
     }
 
 
-/**
-     * details api
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function details()
-    {
-        $user = Auth::user();
-        return response()->json(['success' => $user], $this-> successStatus);
-    }
+
 }
