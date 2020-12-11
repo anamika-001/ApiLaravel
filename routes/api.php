@@ -15,6 +15,8 @@ use Illuminate\Http\Request;
 //routing for login register
 Route::post('login', 'API\UserController@login');
 Route::post('register', 'API\UserController@register');
+//route for otp verifiaction
+Route::post('otpverification', 'API\UserController@otpverification');
 
 //routing for product
 Route::post('products', 'API\ProductController@createProduct');
